@@ -1,6 +1,8 @@
 from django.db import models
+from django.db.models.fields.related import ForeignKey
 
 class Genre(models.Model):
+    id = models.IntegerField(primary_key=True) #
     name = models.CharField(max_length=50)
 
 class Movie(models.Model):
@@ -8,7 +10,7 @@ class Movie(models.Model):
     backdrop_path = models.CharField(max_length=200) #
     genres = models.ManyToManyField(Genre)
     id = models.IntegerField(primary_key=True) #
-    overview = models.TextField()
+    overview = models.TextField(blank=True)
     popularity = models.FloatField()
     poster_path = models.CharField(max_length=200)
     release_date = models.DateField()
