@@ -47,7 +47,6 @@ def movie_detail(request, movie_id):
     serializer = MovieSerializer(movie)
     return Response(serializer.data)
 
-    movie_detail
 
 # @api_view(['POST'])
 # @permission_classes([AllowAny])

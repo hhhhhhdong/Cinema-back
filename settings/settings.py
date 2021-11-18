@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     # local
     'accounts',
     'movies',
+    'reviews',
     
     # 3rd
     'rest_framework',
