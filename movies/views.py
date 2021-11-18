@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from .serializers import MovieListSerializer, GenreListSerializer
+from .serializers import MovieListSerializer, GenreListSerializer, MovieSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -38,6 +38,16 @@ def genres(request, genre_id):
     movies = genre.movie_set.all()
     serializer = MovieListSerializer(movies, many=True)
     return Response(serializer.data)
+
+# 영화 디테일 정보 반환
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def movie_detail(request, movie_id):
+    movie = get_object_or_404(Movie, pk=movie_id)
+    serializer = MovieSerializer(movie)
+    return Response(serializer.data)
+
+    movie_detail
 
 # @api_view(['POST'])
 # @permission_classes([AllowAny])

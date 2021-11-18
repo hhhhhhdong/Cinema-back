@@ -14,6 +14,14 @@ class MovieListSerializer(serializers.ModelSerializer):
         model = Movie
         fields = '__all__'
 
+class MovieSerializer(serializers.ModelSerializer):
+    
+    genres = GenreListSerializer(many=True)
+    class Meta:
+        model = Movie
+        fields = '__all__'
+
+
 # class GenreListIdSerializer(serializers.ModelSerializer):
 #         class Meta:
 #             model= Genre
