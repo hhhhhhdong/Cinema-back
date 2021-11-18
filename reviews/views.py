@@ -1,3 +1,30 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404
+from rest_framework import status
+from .serializers import ReviewSerializer
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from movies.models import Movie
 
-# Create your views here.
+
+@api_view(['GET', 'POST'])
+def get_create_by_movie(request, movie_id):
+    if request.method == 'POST':
+        movie = get_object_or_404(Movie, pk=movie_id)
+        print(request.user)
+        serializer = ReviewSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(user=request.user, movie=movie)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+    else:
+        movie = get_object_or_404(Movie, pk=movie_id)
+        revies = movie.review_set.all()
+        serializer = ReviewSerializer(revies, many=True)
+        return Response(serializer.data)
+        
+
+@api_view(['GET'])
+def get_by_user(request):
+    revies = request.user.review_set.all()
+    serializer = ReviewSerializer(revies, many=True)
+    return Response(serializer.data)
