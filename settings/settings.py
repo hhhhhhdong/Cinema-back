@@ -39,6 +39,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'drf_yasg',
+    # 'rest_framework_swagger',
 
     # native
     'django.contrib.admin',
