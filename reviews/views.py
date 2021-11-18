@@ -2,8 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from .serializers import ReviewSerializer
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.decorators import api_view
 from movies.models import Movie
 
 
@@ -11,7 +10,6 @@ from movies.models import Movie
 def get_create_by_movie(request, movie_id):
     if request.method == 'POST':
         movie = get_object_or_404(Movie, pk=movie_id)
-        print(request.user)
         serializer = ReviewSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save(user=request.user, movie=movie)

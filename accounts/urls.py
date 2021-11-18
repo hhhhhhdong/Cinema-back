@@ -8,6 +8,8 @@ from . import views
 
 urlpatterns = [
     path('signup/', views.signup),
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/token/', TokenObtainPairView.as_view()),
+    path('api/token/refresh/', TokenRefreshView.as_view()),
+    path('<username>/', views.profile),
+    path('<int:user_id>/follow/', views.follow),
 ]
