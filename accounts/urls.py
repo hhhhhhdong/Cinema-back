@@ -7,6 +7,7 @@ from . import views
 
 
 urlpatterns = [
+    path('get/', views.get),
     path('signup/', views.signup),
     path('api/token/', TokenObtainPairView.as_view()),
     path('api/token/refresh/', TokenRefreshView.as_view()),

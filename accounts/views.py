@@ -23,7 +23,6 @@ def signup(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
 def follow(request, user_id):
     me = request.user
     you = get_object_or_404(User, pk=user_id)
@@ -36,7 +35,6 @@ def follow(request, user_id):
     return Response({'detail': '권한이 없습니다.'}, status=status.HTTP_403_FORBIDDON)
 
 @api_view(['GET'])
-@permission_classes([AllowAny])
 def profile(request, username):
     person = get_object_or_404(User, username=username)
     data={
@@ -47,3 +45,10 @@ def profile(request, username):
     # serializer에 추가 데이터 만들어서 보내기
     data.update(serializer.data)
     return Response(data)
+
+
+@api_view(['GET'])
+def get(request):
+    user = request.user
+    serializer = UserSerializer(user)
+    return Response(serializer.data)
