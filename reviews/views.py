@@ -43,6 +43,21 @@ def get_by_user(request, user_id):
     serializer = ReviewSerializer(reviews, many=True)
     return Response(serializer.data)
 
+@api_view(['GET'])
+def recommend(request):
+    user = get_object_or_404(User, pk=request.user.pk)
+    people = user.followings.all()
+    tmp = []
+    for person in people:
+        reviews = person.review_set.all()
+        serializer = ReviewSerializer(reviews, many=True)
+        tmp += serializer.data
+    if len(tmp) == 0:
+        top_rated_reviews = Review.objects.order_by('-rated')[0:20]
+        serializer = ReviewSerializer(top_rated_reviews, many=True)
+        tmp += serializer.data
+    return Response(tmp)
+
 
 @api_view(['POST'])
 def likes(request, review_id):
