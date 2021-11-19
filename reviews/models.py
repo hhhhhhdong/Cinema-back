@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.db.models.fields import IntegerField
 
 from movies.models import Movie
 
@@ -8,3 +9,4 @@ class Review(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
     content = models.TextField()
     rated = models.IntegerField()
+    like_cnt = IntegerField(default=0)
