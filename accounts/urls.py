@@ -11,6 +11,6 @@ urlpatterns = [
     path('signup/', views.signup),
     path('api/token/', TokenObtainPairView.as_view()),
     path('api/token/refresh/', TokenRefreshView.as_view()),
-    path('<username>/', views.profile),
     path('<int:user_id>/follow/', views.follow),
+    path('<username>/', views.profile),
 ]
