@@ -19,7 +19,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         genres = GenreListSerializer(many=True)
         class Meta:
             model = Movie
-            fields = ('id', 'poster_path', 'title', 'vote_average', 'release_date', 'genres',)
+            fields = ('id', 'poster_path', 'title', 'vote_average', 'release_date', 'genres', 'backdrop_path', )
 
 
 
