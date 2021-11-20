@@ -64,6 +64,8 @@ def likes(request, review_id):
     review = get_object_or_404(Review, pk=review_id)
     if review.like_users.filter(pk=request.user.pk).exists():
         review.like_users.remove(request.user)
+        liked = False
     else:
         review.like_users.add(request.user)
-    return Response({review_id: review.pk})
+        liked = True
+    return Response({'review_id': review.pk, 'liked': liked})
