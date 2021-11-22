@@ -44,9 +44,12 @@ def get_by_user(request, user_id):
     return Response(serializer.data)
 
 
-@api_view(['DELETE', 'PUT'])
-def reviews_update_delete(request, review_id):
+@api_view(['GET', 'DELETE', 'PUT'])
+def reviews_get_update_delete(request, review_id):
     review = get_object_or_404(Review, pk=review_id)
+    if request.method == 'GET':
+        serializer = ReviewSerializer(review)
+        return Response(serializer.data)
     if not request.user.review_set.filter(pk=review_id).exists():
         return Response({'detail': '권한이 없습니다.'}, status=status.HTTP_403_FORBIDDON)
     if request.method == 'PUT':
@@ -88,9 +91,9 @@ def likes(request, review_id):
 
 
 @api_view(['POST'])
-def comments_create(request, review_pk):
+def comments_create(request, review_id):
     if request.user.is_authenticated:
-        review = get_object_or_404(Review, pk=review_pk)
+        review = get_object_or_404(Review, pk=review_id)
         serializer = CommentSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save(author=request.user, review=review)
@@ -98,9 +101,9 @@ def comments_create(request, review_pk):
 
 
 @api_view(['DELETE'])
-def comments_delete(request, review_pk, comment_pk):
-    comment = get_object_or_404(Comment, pk=comment_pk)
-    if not request.user.comment_set.filter(pk=comment_pk).exists():
+def comments_delete(request, review_id, comment_id):
+    comment = get_object_or_404(Comment, pk=comment_id)
+    if not request.user.comment_set.filter(pk=comment_id).exists():
         return Response({'detail': '권한이 없습니다.'}, status=status.HTTP_403_FORBIDDON)
     comment.delete()
-    return Response({ 'id': comment_pk }, status=status.HTTP_204_NO_CONTENT)
+    return Response({ 'id': comment_id }, status=status.HTTP_204_NO_CONTENT)
