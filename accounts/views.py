@@ -51,4 +51,8 @@ def profile(request, username):
 def get(request):
     user = request.user
     serializer = UserSerializer(user)
-    return Response(serializer.data)
+    data = {
+        'level': user.acc_point // 100
+    }
+    data.update(serializer.data)
+    return Response(data)
