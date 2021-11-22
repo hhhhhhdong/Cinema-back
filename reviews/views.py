@@ -1,11 +1,11 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from .serializers import ReviewSerializer
+from .serializers import ReviewSerializer, CommentSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from movies.models import Movie
 from accounts.models import User
-from .models import Review
+from .models import Comment, Review
 
 
 @api_view(['GET', 'POST'])
@@ -14,7 +14,7 @@ def get_create_by_movie(request, movie_id):
         movie = get_object_or_404(Movie, pk=movie_id)
         # 같은 영화에 리뷰를 쓰는 것을 방지
         if movie.review_set.filter(user_id=request.user.pk).exists():
-            return Response({'detail': '이미 작성 하셨습니다.'}, status=status.HTTP_403_FORBIDDON)
+            return Response({'detail': '이미 작성 하셨습니다.'}, status=status.HTTP_406_NOT_ACCEPTABLE)
         serializer = ReviewSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
 
@@ -69,3 +69,22 @@ def likes(request, review_id):
         review.like_users.add(request.user)
         liked = True
     return Response({'review_id': review.pk, 'liked': liked})
+
+
+@api_view(['POST'])
+def comments_create(request, review_pk):
+    if request.user.is_authenticated:
+        review = get_object_or_404(Review, pk=review_pk)
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save(author=request.user, review=review)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['DELETE'])
+def comments_delete(request, review_pk, comment_pk):
+    comment = get_object_or_404(Comment, pk=comment_pk)
+    if not request.user.comment_set.filter(pk=comment_pk).exists():
+        return Response({'detail': '권한이 없습니다.'}, status=status.HTTP_403_FORBIDDON)
+    comment.delete()
+    return Response({ 'id': comment_pk }, status=status.HTTP_204_NO_CONTENT)
