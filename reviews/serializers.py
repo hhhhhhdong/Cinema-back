@@ -13,7 +13,7 @@ class CommentSerializer(serializers.ModelSerializer):
     review = serializers.PrimaryKeyRelatedField(read_only=True)
     class Meta:
         model = Comment
-        fields = ('author', 'review', 'content',)
+        fields = ('id', 'author', 'review', 'content',)
 
 class ReviewSerializer(serializers.ModelSerializer):
     
