@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('<int:review_id>/', views.reviews_update_delete),
     path('recommend/', views.recommend),
     path('<int:review_id>/likes/', views.likes),
     path('user/<int:user_id>/', views.get_by_user),

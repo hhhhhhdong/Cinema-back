@@ -43,6 +43,22 @@ def get_by_user(request, user_id):
     serializer = ReviewSerializer(reviews, many=True)
     return Response(serializer.data)
 
+
+@api_view(['DELETE', 'PUT'])
+def reviews_update_delete(request, review_id):
+    review = get_object_or_404(Review, pk=review_id)
+    if not request.user.review_set.filter(pk=review_id).exists():
+        return Response({'detail': '권한이 없습니다.'}, status=status.HTTP_403_FORBIDDON)
+    if request.method == 'PUT':
+        serializer = ReviewSerializer(review, data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+    elif request.method == 'DELETE':
+        review.delete()
+        return Response({ 'id': review_id }, status=status.HTTP_204_NO_CONTENT)
+
+
 @api_view(['GET'])
 def recommend(request):
     user = get_object_or_404(User, pk=request.user.pk)
