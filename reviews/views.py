@@ -1,12 +1,15 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import status
+from rest_framework.serializers import Serializer
 from .serializers import ReviewSerializer, CommentSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from movies.models import Movie
+from movies.models import Genre, Movie
 from accounts.models import User
 from .models import Comment, Review
 
+from accounts.serializers import ScoreboardSerializer
+from movies.serializers import MovieListSerializer
 
 @api_view(['GET', 'POST'])
 def get_create_by_movie(request, movie_id):
@@ -26,6 +29,16 @@ def get_create_by_movie(request, movie_id):
                 user.curr_point += 10
                 user.save()
 
+            # 리뷰를 작성한 유저의 점수판에 해당 영화장르의 점수를 올려야한다.
+            score_data = {
+                'score': request.data.get('rated')
+            }
+            genres = movie.genres.all()
+            for genre in genres:
+                score_serializer = ScoreboardSerializer(data=score_data)
+                if score_serializer.is_valid(raise_exception=True):
+                    score_serializer.save(user=request.user, genre=genre)
+                    
 
             serializer.save(user=request.user, movie=movie)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -61,7 +74,7 @@ def reviews_get_update_delete(request, review_id):
         review.delete()
         return Response({ 'id': review_id }, status=status.HTTP_204_NO_CONTENT)
 
-
+# 팔로워를 기준으로 영화 추천
 @api_view(['GET'])
 def recommend(request):
     user = get_object_or_404(User, pk=request.user.pk)
@@ -77,6 +90,33 @@ def recommend(request):
         tmp += serializer.data
     return Response(tmp)
 
+# 유저의 점수판을 기준으로 영화추천
+@api_view(['GET'])
+def recommend2(request):
+    user = get_object_or_404(User, pk=request.user.pk)
+    board = {}
+    scores = user.scoreboard_set.all()
+    for score in scores:
+        if board.get(score.genre.id):
+            board[score.genre.id]['score'] += score.score
+        else:
+            board[score.genre.id] = {
+                'genre_id': score.genre.id,
+                'genre_name': score.genre.name,
+                'score': score.score,
+            }
+    sorted_board = sorted(board.values(), key=lambda item: item['score'], reverse=True)
+    movies = []
+    for item in sorted_board:
+        genre = get_object_or_404(Genre, pk=item['genre_id'])
+        for movie in genre.movie_set.order_by('-vote_average')[:5]:
+            if movie in movies: continue
+            movies.append(movie)
+    serializer = MovieListSerializer(movies, many=True)
+    result = []
+    result.append(sorted_board)
+    result.append(serializer.data)
+    return Response(result)
 
 @api_view(['POST'])
 def likes(request, review_id):
