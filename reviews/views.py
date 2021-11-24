@@ -44,7 +44,7 @@ def get_create_by_movie(request, movie_id):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
     else:
         movie = get_object_or_404(Movie, pk=movie_id)
-        reviews = movie.review_set.all()
+        reviews = movie.review_set.order_by('-created_at')
         serializer = ReviewSerializer(reviews, many=True)
         return Response(serializer.data)
         
@@ -52,7 +52,7 @@ def get_create_by_movie(request, movie_id):
 @api_view(['GET'])
 def get_by_user(request, user_id):
     person = get_object_or_404(User, pk=user_id)
-    reviews = person.review_set.all()
+    reviews = person.review_set.order_by('-created_at')
     serializer = ReviewSerializer(reviews, many=True)
     return Response(serializer.data)
 
@@ -84,11 +84,12 @@ def recommend(request):
         reviews = person.review_set.all()
         serializer = ReviewSerializer(reviews, many=True)
         tmp += serializer.data
-    if len(tmp) == 0:
-        top_rated_reviews = Review.objects.order_by('-rated')[0:20]
-        serializer = ReviewSerializer(top_rated_reviews, many=True)
-        tmp += serializer.data
-    return Response(tmp)
+    result = sorted(tmp, key=lambda item: item['created_at'], reverse=True)
+    # if len(tmp) == 0:
+    #     top_rated_reviews = Review.objects.order_by('-rated')[0:20]
+    #     serializer = ReviewSerializer(top_rated_reviews, many=True)
+    #     tmp += serializer.data
+    return Response(result)
 
 # 유저의 점수판을 기준으로 영화추천
 @api_view(['GET'])
