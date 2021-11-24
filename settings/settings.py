@@ -26,7 +26,10 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'sixdragoncinema.herokuapp.com',
+    '127.0.0.1' # 로컬 테스트를 위해 등록
+]
 
 
 # Application definition
