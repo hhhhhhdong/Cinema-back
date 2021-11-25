@@ -76,7 +76,7 @@ def reviews_get_update_delete(request, review_id):
 
 # 팔로워를 기준으로 영화 추천
 @api_view(['GET'])
-def recommend(request):
+def community(request):
     user = get_object_or_404(User, pk=request.user.pk)
     people = user.followings.all()
     tmp = []
@@ -85,15 +85,11 @@ def recommend(request):
         serializer = ReviewSerializer(reviews, many=True)
         tmp += serializer.data
     result = sorted(tmp, key=lambda item: item['created_at'], reverse=True)
-    # if len(tmp) == 0:
-    #     top_rated_reviews = Review.objects.order_by('-rated')[0:20]
-    #     serializer = ReviewSerializer(top_rated_reviews, many=True)
-    #     tmp += serializer.data
     return Response(result)
 
 # 유저의 점수판을 기준으로 영화추천
 @api_view(['GET'])
-def recommend2(request):
+def recommend(request):
     user = get_object_or_404(User, pk=request.user.pk)
     board = {}
     scores = user.scoreboard_set.all()

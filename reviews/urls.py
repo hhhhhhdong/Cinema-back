@@ -2,8 +2,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
+    path('community/', views.community),
     path('recommend/', views.recommend),
-    path('recommend2/', views.recommend2),
     path('<int:review_id>/likes/', views.likes),
     path('user/<int:user_id>/', views.get_by_user),
     path('movie/<int:movie_id>/', views.get_create_by_movie),
